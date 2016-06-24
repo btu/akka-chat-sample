@@ -1,0 +1,124 @@
+syntax = "proto2";
+
+package btu.chat;
+
+//Chat datas
+
+message TopicDescriptor {
+  required string name = 1;
+  required string id = 2;
+  required string ownerId = 3;
+  required int64 createTimestamp = 4;
+  repeated string participant = 5;
+}
+message TopicWeek{
+  required string currentWeek = 1;
+  required int64 messageId = 2;
+  required int64 timestamp = 3;
+}
+
+message TopicDataSnapshot { 
+  repeated TopicMessage messages = 1;
+  required int32 dirtyness = 10; //snapshot info
+}
+
+message TopicMessage{
+  required int64 messageId = 1;
+  required int64 messageTimestamp = 2;
+  required string senderId = 3;
+  optional int64 senderTimestamp = 10;
+  optional TopicMessageText text = 100; // 0,1 text
+  optional TopicMessageAudio audio = 110; // 0,1 audio
+  repeated TopicMessageImage images = 120;// 1..x images
+}
+//message TopicMessageContext
+message TopicMessageText {
+  required string data = 1;   // string is utf-8
+}
+message TopicMessageAudio {
+  required bytes data = 1;
+  optional int64 durationMs = 2;
+  optional string mime = 3;
+  enum AudioFormat {
+    LINK = 0;
+    BYTES = 1;
+  }
+  required AudioFormat format = 10;
+}
+message TopicMessageImage{
+  required bytes data = 1;
+  optional string caption = 2;
+  optional string mime = 3;
+  enum ImageFormat {
+    LINK = 0;
+    BYTES = 1;
+  }
+  required ImageFormat format = 10;
+}
+
+
+//Responses
+
+message TopicData {
+  required string requestId = 1001;
+  optional string key = 1; //None if no more messages
+  repeated TopicMessage messages = 2;
+}
+
+message ChatAck {
+  required int64 timestamp = 1000;
+  required string requestId = 1001;
+}
+message ChatError{
+  required string requestId = 1001;
+  required int32 errorId = 1;
+  required string errorMessage = 2;
+}
+
+
+//Actions
+
+message ActionCreateTopic {
+  required string requestId = 1001;
+  required string name = 1;
+  required string senderId = 2;
+  optional string topicId = 3;//update
+}
+
+message ActionAddParticipant{
+  required string requestId = 1001;
+  required string topicId = 1;
+  required string senderId = 2;
+  required string participantId = 3;
+  optional bool invert = 4;
+}
+
+message ActionGetDescriptor {
+  required string requestId = 1001;
+  required string senderId = 1;
+  required string topicId = 2;//update
+}
+
+message ActionPostText {
+  required string requestId = 1001;
+  required string topicId = 1;
+  required string senderId = 2;
+  required string text = 3;
+  optional int64 senderTimestamp = 10;
+  
+}
+
+message ActionTopicQuery{
+  required string requestId = 1001;
+  required string topicId = 1;
+  required string senderId = 2;
+  optional string searchKeyword = 3;
+  optional TimeFrame timeframe = 4;
+  optional int32 maxMessages = 5;
+  optional string key = 6;
+  message TimeFrame{
+    required int64 start = 1;
+    optional int64 end = 2;
+  }
+}
+

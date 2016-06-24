@@ -1,0 +1,16 @@
+<configuration>
+<!--
+  <conversionRule conversionWord="kamonToken" converterClass="kamon.trace.logging.LogbackTraceTokenConverter"/>
+-->
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%X{akkaTimestamp} %-5level [%-25.-25logger{0}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+
+  <root level="DEBUG">
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+</configuration>
